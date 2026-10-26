@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reservá tu cancha · Club CEC</title>
+<meta name="theme-color" content="#13203a">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f3f0e8; --card:#fff; --panel2:#f8f6f1; --line:#e2ddd1; --line2:#ece8de;
+    --text:#13203a; --muted:#6c7488; --soft:#3b4660; --ink:#13203a;
+    --acc:#2C8140; --acc-d:#236A33; --on-acc:#fff; --acc-tx:#9fd0aa;
+    --green:#2C8140; --red:#b91c1c; --blue:#0369a1; --amber:#c2410c;
+    --cond:Archivo,"Arial Narrow",sans-serif;
+    --sh:0 1px 2px rgba(19,32,58,.06),0 4px 14px rgba(19,32,58,.06);
+    --ancho:1080px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:Archivo,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+  button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+  button:disabled{cursor:not-allowed}
+  .ico{flex-shrink:0;vertical-align:-3px}
+  #app{flex:1;display:flex;flex-direction:column}
+  .wrap{width:100%;max-width:var(--ancho);margin:0 auto}
+
+  /* ===== Encabezado de cada paso ===== */
+  .c-head{position:sticky;top:0;z-index:5;background:rgba(243,240,232,.93);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  .c-head .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top))}
+  .c-head .tt{text-align:center;min-width:0}
+  .c-head b{font-family:var(--cond);font-stretch:80%;font-size:21px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .c-head small{color:var(--muted);font-size:12px}
+  .c-ib{width:38px;height:38px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;color:var(--soft);flex-shrink:0;position:relative}
+  .c-ib.ghost{background:none;border:none}
+  .c-ib .ico{vertical-align:0}
+  .c-ib em{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:99px;background:var(--acc);color:#fff;font-size:11px;font-style:normal;font-weight:700;display:grid;place-items:center;padding:0 5px}
+  .c-ib .lbl{display:none}
+
+  /* ===== Inicio con la foto del club ===== */
+  .c-inicio{flex:1;display:flex;flex-direction:column;
+    background:linear-gradient(180deg,rgba(10,18,34,.55) 0,rgba(10,18,34,.3) 38%,rgba(10,18,34,.8) 100%),var(--foto) center/cover no-repeat,var(--ink)}
+  .c-inicio>.wrap{flex:1;display:flex;flex-direction:column}
+  .c-hero{padding:56px 22px 14px;padding-top:max(56px,calc(env(safe-area-inset-top) + 40px));text-align:center}
+  .c-logo{width:64px;height:64px;border-radius:50%;background:var(--acc);color:#fff;display:inline-grid;place-items:center;box-shadow:0 0 0 4px rgba(255,255,255,.85);margin-bottom:12px}
+  .c-logo .ico{vertical-align:0}
+  .c-hero h1{font-size:30px;font-weight:700;font-stretch:90%;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.35);margin-bottom:6px}
+  .c-hero p{color:rgba(255,255,255,.9);font-size:15px;line-height:1.45;text-shadow:0 1px 8px rgba(0,0,0,.4);max-width:460px;margin:0 auto}
+  .c-list{padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+  .c-sede{display:flex;flex-direction:column;gap:7px;text-align:left;background:rgba(255,255,255,.96);border:1px solid transparent;border-radius:16px;padding:14px;backdrop-filter:blur(6px);box-shadow:var(--sh);transition:transform .12s,box-shadow .12s}
+  .c-sede:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.18)}
+  .c-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .c-sede b{font-family:var(--cond);font-stretch:80%;font-size:22px;font-weight:600}
+  .c-sede small{color:var(--muted);font-size:12px;display:flex;gap:5px;align-items:center}
+  .c-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--soft)}
+  .c-meta span:not(:last-child)::after{content:"·";margin-left:10px;color:var(--muted)}
+  .c-tags{display:flex;gap:5px;flex-wrap:wrap}
+  .c-tags span{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--panel2);border:1px solid var(--line2);color:var(--soft)}
+  .deps{display:flex;gap:6px;flex-wrap:wrap}
+  .dep{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 10px 3px 7px;border-radius:99px;background:color-mix(in srgb,var(--acc) 12%,#fff);color:var(--acc);border:1px solid color-mix(in srgb,var(--acc) 28%,#fff);white-space:nowrap}
+  .c-inicio .c-empty{color:#fff}
+
+  /* ===== Elegir turno ===== */
+  .lay{flex:1;width:100%;display:flex;flex-direction:column}
+  .c-sec{padding:14px 16px 10px;display:flex;flex-direction:column;gap:10px;min-width:0}
+  .c-lbl{font-size:13px;font-weight:700;color:var(--soft);display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+  .c-lbl em{font-style:normal;font-weight:500;color:var(--muted)}
+  .c-deps{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}
+  .c-deps::-webkit-scrollbar{display:none}
+  .c-deps button{flex-shrink:0;display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:14px;font-weight:600}
+  .c-deps .on{background:var(--acc);border-color:var(--acc);color:#fff}
+  .c-arr{display:flex;gap:6px}
+  .c-arr button{width:32px;height:32px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;color:var(--text)}
+  .c-arr button .ico{vertical-align:0}
+  .c-arr button:not(:disabled):hover{border-color:var(--acc);color:var(--acc)}
+  .c-arr button:disabled{opacity:.3}
+  .c-days{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:-6px -16px 0;padding:8px 16px 2px;scroll-snap-type:x proximity;scroll-padding:0 16px;position:relative}
+  .c-days::-webkit-scrollbar{display:none}
+  .c-days button{flex:0 0 52px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:12px;background:var(--card);border:1px solid var(--line);scroll-snap-align:start;position:relative}
+  .c-days button:hover{border-color:var(--soft)}
+  .c-days small{font-size:11px;color:var(--muted);text-transform:capitalize}
+  .c-days b{font-size:19px}
+  .c-days i{position:absolute;top:-7px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:var(--ink);color:#fff;padding:1px 5px;border-radius:99px;white-space:nowrap}
+  .c-days .on{background:var(--acc);border-color:var(--acc);color:#fff}.c-days .on small{color:#d6eedc}
+  .c-seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:3px}
+  .c-seg button{padding:9px 0;border-radius:9px;font-size:14px;font-weight:600;color:var(--soft)}
+  .c-seg .on{background:var(--ink);color:#fff}
+  .c-seg.dos{grid-template-columns:1fr 1fr}.c-seg.bad{border-color:var(--red)}
+  .c-sum .desc b{color:var(--acc)}
+  .c-horas{display:flex;flex-direction:column;gap:8px}
+  .c-mom{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:6px 2px 0}
+  .c-hora{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:border-color .12s}
+  .c-hora:hover{border-color:var(--soft)}
+  .c-hora.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+  .c-hrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 12px}
+  .c-hrow>b{font-family:var(--cond);font-stretch:80%;font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;min-width:54px}
+  .c-hrow .c-pr{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15}
+  .c-hrow .c-pr small{font-size:10px;font-weight:500;color:var(--muted)}
+  .c-hrow>.ico{color:var(--muted)}
+  .c-hora.on .c-hrow,.c-hcourts{background:color-mix(in srgb,var(--acc) 8%,var(--card))}
+  .c-hcourts{display:flex;flex-direction:column;gap:7px;padding:4px 10px 10px}
+  .c-court,.c-pay{display:flex;align-items:center;gap:12px;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;width:100%;box-shadow:var(--sh)}
+  .c-court.on,.c-pay.on{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,var(--card))}
+  .c-ic{width:42px;height:42px;flex-shrink:0;border-radius:12px;display:grid;place-items:center;background:#e6f2e9;color:var(--acc)}
+  .c-ic .ico{vertical-align:0}
+  .c-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .c-tx b{font-size:15px}.c-tx small{font-size:12px;color:var(--muted)}
+  .c-pr{font-weight:700;color:var(--acc);font-size:15px;white-space:nowrap}
+  .rad{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex-shrink:0}
+  .c-court.on .rad,.c-pay.on .rad{border:6px solid var(--acc)}
+  .c-empty{text-align:center;color:var(--muted);padding:50px 10px;display:flex;flex-direction:column;align-items:center;gap:12px}
+
+  /* ===== Botón de abajo (celular) y panel lateral (computadora) ===== */
+  .c-foot{position:sticky;bottom:0;margin-top:auto;padding:14px 16px 20px;padding-bottom:max(20px,env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%);display:flex;flex-direction:column;gap:8px;z-index:4}
+  .c-inicio .c-foot{background:none}
+  .c-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--acc);color:#fff;font-weight:700;font-size:16px;padding:15px;border-radius:14px;box-shadow:0 8px 20px rgba(44,129,64,.22);transition:background .12s}
+  .c-btn:not(:disabled):hover{background:var(--acc-d)}
+  .c-btn span{margin-left:auto;background:rgba(255,255,255,.22);padding:3px 10px;border-radius:8px}
+  .c-btn .ico{vertical-align:0}
+  .c-btn:disabled{opacity:.35;box-shadow:none}
+  .c-btn.ghost{background:var(--card);color:var(--text);border:1px solid var(--line);box-shadow:none}
+  .c-btn.ghost:hover{background:var(--panel2)}
+  .c-btn.ghost span{background:var(--acc);color:#fff}
+  .side{display:none}
+
+  /* ===== Formularios y resumen ===== */
+  .c-form{padding:14px 16px 10px;display:flex;flex-direction:column;gap:14px}
+  .c-form>label{font-size:13px;font-weight:600;color:var(--soft);display:flex;flex-direction:column;gap:6px}
+  .c-form em{font-weight:400;color:var(--muted);font-style:normal}
+  .c-in{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0 12px;color:var(--muted)}
+  .c-in:focus-within{border-color:var(--acc)}.c-in.bad{border-color:var(--red)}
+  .c-in input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text);font:inherit;font-size:16px;padding:12px 0}
+  .c-err{color:var(--red);font-size:12px;font-weight:500}
+  .c-ok{display:flex!important;flex-direction:row!important;gap:10px!important;font-weight:400!important;align-items:flex-start}
+  .c-ok input{accent-color:var(--acc);width:18px;height:18px;margin-top:1px;flex-shrink:0}
+  .c-sum{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:13px}
+  .c-sum div{display:flex;justify-content:space-between;gap:10px}
+  .c-sum span{color:var(--muted)}.c-sum b{text-align:right}
+  .c-sum .big b{font-size:20px;color:var(--acc)}
+  .c-sum h3{font-size:15px;font-weight:700}
+  .c-safe{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
+  .c-safe .ico{color:var(--green)}
+  .c-done{display:flex;gap:14px;align-items:center;margin:16px 16px 0;padding:14px;border-radius:14px;background:#e3f4e8;border:1px solid #b9e2c6;color:var(--green)}
+  .c-done b{color:var(--text);display:block;font-size:17px}.c-done small{color:var(--soft);font-size:12px}
+  .c-code{text-align:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+  .c-code small{color:var(--muted);font-size:12px;display:block}
+  .c-code b{font-family:var(--cond);font-stretch:80%;font-size:32px;letter-spacing:3px;color:var(--acc)}
+  .c-res{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:13px;box-shadow:var(--sh)}
+  .c-res.cancelada{opacity:.6}
+  .c-res small{color:var(--muted)}
+  .c-cancel{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:10px;border:1px solid #f3c4c4;background:#fbe4e4;color:var(--red);font-weight:600;margin-top:4px}
+  .c-note{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:12px;margin-top:4px}
+  .pill{--c:var(--green);display:inline-flex;align-items:center;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;color:var(--c);background:color-mix(in srgb,var(--c) 15%,transparent);white-space:nowrap}
+  .pill.senada{--c:var(--blue)}.pill.pendiente{--c:var(--amber)}.pill.cancelada{--c:var(--red)}
+  .c-closed{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:90px 26px;color:var(--muted);flex:1}
+  .c-closed b{color:var(--text);font-size:19px}
+  .firma{font-size:12px;color:var(--muted);text-align:center;padding:4px 0 2px}
+  .c-inicio .firma{color:rgba(255,255,255,.7)}
+  .firma b{font-weight:700}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(140px);background:var(--green);color:#fff;padding:12px 20px;border-radius:10px;font-weight:600;transition:.3s;z-index:30;max-width:calc(100vw - 32px);text-align:center}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+
+  /* ===== Pantallas grandes ===== */
+  @media (min-width:900px){
+    .c-head .wrap{padding:14px 24px}
+    .c-head .tt{text-align:left;flex:1;margin-left:4px}
+    .c-head b{font-size:24px}
+    .c-ib.mis{width:auto;border-radius:99px;padding:0 16px;gap:8px;display:flex;font-weight:600;color:var(--text)}
+    .c-ib.mis .lbl{display:inline}
+    .c-ib.mis em{position:static;margin-left:2px}
+    /* inicio: foto a pantalla completa, sedes en columnas */
+    .c-hero{padding:110px 24px 34px}
+    .c-logo{width:84px;height:84px}
+    .c-hero h1{font-size:52px}
+    .c-hero p{font-size:18px;max-width:560px}
+    .c-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,380px));justify-content:center;gap:16px;padding:12px 24px}
+    .solo .c-list{grid-template-columns:none;justify-content:stretch}
+    .solo .c-list.mis-l{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:12px 0}
+    .c-sede{padding:18px}
+    .c-inicio .c-foot{position:static;align-items:center;padding:24px 24px 34px}
+    .c-inicio .c-foot .c-btn{width:auto;min-width:300px;padding:14px 28px}
+    /* pasos: contenido + panel "Tu reserva" a la derecha */
+    .lay{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;align-items:start;padding:24px 24px 48px}
+    .lay .c-sec,.lay .c-form{padding:0}
+    .lay .c-foot,.lay .m-only{display:none}
+    .side{display:flex;flex-direction:column;gap:12px;position:sticky;top:96px}
+    .side .c-sum{border-style:solid;box-shadow:var(--sh);padding:18px}
+    .side .vacio{color:var(--muted);font-size:13px;line-height:1.45}
+    .c-days{margin:-6px 0 0;padding:8px 2px 2px;scroll-padding:0}
+    .c-days button{flex-basis:58px}
+    .c-deps{margin:0;padding:0}
+    .c-horas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+    .c-mom{grid-column:1/-1}
+    .c-hora.on{grid-column:1/-1}
+    .c-hora.on .c-hcourts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+    /* confirmación y mis reservas: columna centrada */
+    .solo{max-width:620px;width:100%;margin:0 auto;padding:12px 0 40px}
+    .solo .c-foot{position:static;background:none}
+    .mis-l{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+    .toast{bottom:28px}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* Iconos: Lucide (licencia ISC) embebidos como SVG; "racket", "clupoint" y los de deportes son propios */
+const ICONS = {
+  "clupoint":'<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="3.4"/><path d="M8.6 10h6.8"/>',
+  "menu":'<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>',
+  "tenis":'<circle cx="12" cy="12" r="10"/><path d="M6 4.3c2.9 3.8 2.9 11.6 0 15.4"/><path d="M18 4.3c-2.9 3.8-2.9 11.6 0 15.4"/>',
+  "futbol":'<circle cx="12" cy="12" r="10"/><path d="m12 7.5 4.2 3-1.6 4.9H9.4l-1.6-4.9z"/><path d="M12 7.5V2.5M16.2 10.5l4.6-1.5M14.6 15.4l2.8 3.9M9.4 15.4l-2.8 3.9M7.8 10.5 3.2 9"/>',
+  "basquet":'<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2v20"/><path d="M5 4.9c2.6 2.2 3.6 4.6 3.6 7.1S7.6 16.9 5 19.1"/><path d="M19 4.9c-2.6 2.2-3.6 4.6-3.6 7.1s1 4.9 3.6 7.1"/>',
+  "voley":'<circle cx="12" cy="12" r="10"/><path d="M12 12V2"/><path d="M12 12c3.5 2 6.4 2.3 9.4 1.3"/><path d="M12 12c-3.5 2-5.3 4.9-5.6 8.3"/><path d="M12 2c-3 2.5-4.2 6-3.6 9.5"/>',
+  "racket":'<path d="M10 2c3.9 0 7 2.9 7 6.6 0 2.3-1.1 4.2-3 5.4l-1.6 1H7.6L6 14c-1.9-1.2-3-3.1-3-5.4C3 4.9 6.1 2 10 2z"/><path d="M8.2 15.2 7.4 19M11.8 15.2l.8 3.8"/><path d="M6.6 18.8h6.8v3H6.6z"/><path d="M7.5 6.5h.01M10 6h.01M12.5 6.5h.01M7 9.2h.01M10 9h.01M13 9.2h.01M8.5 11.6h.01M11.5 11.6h.01"/>',
+  "calendar-days":'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/>',
+  "list":'<path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/>',
+  "layout-grid":'<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+  "building-2":'<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>',
+  "smartphone":'<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
+  "chevron-left":'<path d="m15 18-6-6 6-6"/>',
+  "chevron-right":'<path d="m9 18 6-6-6-6"/>',
+  "chevron-down":'<path d="m6 9 6 6 6-6"/>',
+  "chart-column":'<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+  "settings":'<path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>',
+  "users":'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  "percent":'<line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+  "chevron-up":'<path d="m18 15-6-6-6 6"/>',
+  "map-pin":'<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+  "user":'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  "phone":'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  "mail":'<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  "arrow-left":'<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+  "circle-check":'<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+  "circle-check-big":'<path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/>',
+  "circle-x":'<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+  "circle-plus":'<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/>',
+  "check":'<path d="M20 6 9 17l-5-5"/>',
+  "x":'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  "plus":'<path d="M5 12h14"/><path d="M12 5v14"/>',
+  "info":'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+  "shield-check":'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+  "wallet":'<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+  "credit-card":'<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
+  "banknote":'<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
+  "store":'<path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/>',
+  "send":'<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/>',
+  "search":'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  "coins":'<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/>',
+  "clock":'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  "trending-up":'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+  "ticket":'<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/>',
+  "pencil":'<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
+  "trash-2":'<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+  "wrench":'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+  "repeat":'<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
+  "sun":'<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+  "house":'<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  "share-2":'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>',
+  "calendar-plus":'<path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M3 10h18"/><path d="M16 19h6"/><path d="M19 16v6"/>'
+};
+const ic = (n,s=18) => `<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]||''}</svg>`;
+
+/* ---------- Utilidades ---------- */
+const $ = s => document.querySelector(s);
+const money = n => '$' + Math.round(n).toLocaleString('es-AR');
+const toMin = s => { const [h,m] = s.split(':').map(Number); return h*60+m; };
+const hm = m => { m = ((m%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); };
+const dkey = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const kDate = k => { const [y,m,d] = k.split('-').map(Number); return new Date(y,m-1,d); };
+const addD = (k,n) => { const d = kDate(k); d.setDate(d.getDate()+n); return dkey(d); };
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const dLabel = (k,opt={weekday:'long',day:'numeric',month:'long'}) => cap(kDate(k).toLocaleDateString('es-AR',opt));
+const dShort = k => dLabel(k,{weekday:'short',day:'numeric',month:'short'});
+const nowMin = () => { const n = new Date(); return n.getHours()*60+n.getMinutes(); };
+const TODAY = dkey(new Date());
+const PHONE_RE = /^[0-9 +()-]{8,}$/;
+const ESTADO = {pagada:'Pagada', senada:'Señada', pendiente:'Pendiente de pago', cancelada:'Cancelada'};
+
+/* ---------- Datos del club (en producción vienen de clupoint.com.ar/reservar/cec) ---------- */
+const DEP = {
+  futbol: {n:'Fútbol', i:'futbol', dur:60},
+  padel:  {n:'Pádel', i:'racket', dur:90},
+  tenis:  {n:'Tenis', i:'tenis', dur:60},
+  basquet:{n:'Básquet', i:'basquet', dur:60},
+  voley:  {n:'Vóley', i:'voley', dur:60},
+};
+const depTipo = c => c.dep==='futbol' ? c.tipo : DEP[c.dep].n+' '+c.tipo.toLowerCase();
+const depChip = k => `<span class="dep">${ic(DEP[k].i,13)}${DEP[k].n}</span>`;
+const depsDe = cs => Object.keys(DEP).filter(k=>cs.some(c=>c.dep===k));
+const CLUB = {id:'cec', n:'Club CEC', pref:'CE', activo:true, foto:'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=1600&q=70&fit=crop'};
+const SEDES = [
+  {id:1,n:'Sede Social',dir:'Av. San Martín 850, General Cabrera',tel:'358 449 1200',abre:'08:00',cierra:'23:00',turno:60,pico:'18:00',sena:50,cancel:24,pagoClub:true,
+   afil:true,afilDesc:20,afilNum:true,   // pregunta "¿Sos afiliado?": 20% de descuento y pide el número (se configura en el panel de la sede)
+   servicios:['Vestuarios','Duchas','Estacionamiento','Bar','Parrilla']},
+];
+// Precios por hora: "valle" antes del horario pico de la sede, "pico" desde ese horario
+const CANCHAS = [
+  {id:1,sede:1,n:'Fútbol 1',dep:'futbol',tipo:'Fútbol 5',techo:'Descubierta',sup:'Césped sintético',valle:42000,pico:56000,estado:'activa'},
+  {id:2,sede:1,n:'Fútbol 2',dep:'futbol',tipo:'Fútbol 5',techo:'Descubierta',sup:'Césped sintético',valle:42000,pico:56000,estado:'activa'},
+];
+const sede = id => SEDES.find(s=>s.id===id);
+const cancha = id => CANCHAS.find(c=>c.id===id);
+const closeMin = s => { const c = toMin(s.cierra); return c<=toMin(s.abre) ? c+1440 : c; };
+const precio = (c,ini,dur) => Math.round(((ini>=toMin(sede(c.sede).pico)) ? c.pico : c.valle) * dur/60 / 100) * 100;
+// Precio con el descuento para afiliados de la sede (si la sede pregunta y el jugador es afiliado)
+const descAfil = (c,af) => { const s = sede(c.sede); return af && s.afil ? (s.afilDesc||0) : 0; };
+const precioAfil = (c,ini,dur,af) => { const p = precio(c,ini,dur), d = descAfil(c,af); return d ? Math.round(p*(1-d/100)/100)*100 : p; };
+const vigente = r => r.estado!=='cancelada';
+const libre = (cid,f,ini,dur) => !RES.some(r=>vigente(r) && r.cancha===cid && r.fecha===f && r.ini<ini+dur && ini<r.ini+r.dur);
+const pasado = (f,ini) => f<TODAY || (f===TODAY && ini<nowMin());
+const pagado = r => r.estado==='pagada' ? r.monto : r.estado==='senada' ? Math.round(r.monto*sede(r.sede).sena/100) : 0;
+
+let RES = [], rseq = 2400;
+function crear(o){
+  const c = cancha(o.cid), s = sede(c.sede);
+  const r = {id:++rseq, code:CLUB.pref+'-'+rseq, sede:c.sede, cancha:c.id, fecha:o.f, ini:o.ini, dur:o.dur, cliente:o.cliente, tel:o.tel,
+    estado: o.estado==='senada' && s.sena===100 ? 'pagada' : o.estado, monto:precioAfil(c,o.ini,o.dur,o.afil),
+    afil: s.afil && o.afil ? o.afil : null};   // true o el número de afiliado
+  RES.push(r); return r;
+}
+// Turnos ya tomados por otros jugadores (ejemplo), para que la disponibilidad sea realista
+(() => {
+  let seed = 7; const R = () => (seed = seed*16807 % 2147483647) / 2147483647;
+  for(let o=0; o<30; o++){ const f = addD(TODAY,o), finde = [0,6].includes(kDate(f).getDay());
+    CANCHAS.forEach(c => { const s = sede(c.sede); let t = toMin(s.abre); const end = closeMin(s), pico = toMin(s.pico);
+      while(t < end){
+        const ocupa = R() < (t>=pico||finde ? .8 : .35) * (o>2 ? Math.max(.15, 1-o/18) : 1);
+        if(ocupa && t+60<=end){ crear({cid:c.id, f, ini:t, dur:60, cliente:'—', tel:'', estado:'pagada'}); t += 60; } else t += 30;
+      }
+    });
+  }
+})();
+
+/* ---------- Sitio de reservas ---------- */
+const DIAS_RESERVA = 30;   // cuántos días hacia adelante se puede reservar
+const PASOS = ['inicio','turno','datos','pago','ok','mis'];
+const app = {step:'inicio', sede:null, dep:null, fecha:TODAY, dur:60, hora:null, cancha:null, datos:null, draft:null, pago:null, ult:null, mias:[], err:{}, busy:false};
+// "Mis reservas" queda guardado en este dispositivo (en producción se buscaría por celular)
+try { app.mias = JSON.parse(localStorage.getItem('clupoint.cec.mias')||'[]').filter(r=>r && r.code && cancha(r.cancha)); } catch(e) { app.mias = []; }
+rseq = Math.max(5000, ...app.mias.map(r=>r.id));   // las reservas del jugador no se pisan con las de ejemplo
+RES.push(...app.mias);
+const guardarMias = () => { try { localStorage.setItem('clupoint.cec.mias', JSON.stringify(app.mias)); } catch(e) {} };
+
+// Cada paso queda en el historial: el botón "atrás" del celular o del navegador vuelve al paso anterior
+function appGo(st, reemplazar){
+  if(['turno','datos','pago'].includes(st) && !app.sede) st = 'inicio';
+  if(['datos','pago'].includes(st) && !app.cancha) st = 'turno';
+  if(st==='pago' && !app.datos) st = 'datos';
+  app.step = st; app.err = {};
+  history[reemplazar?'replaceState':'pushState']({st}, '', '#'+st);
+  render(); window.scrollTo(0,0);
+}
+addEventListener('popstate', e => { const st = e.state?.st || 'inicio'; appGo(st==='ok' ? 'inicio' : st, true); });
+
+const disp = (sid,f,ini,dur) => pasado(f,ini) ? [] : CANCHAS.filter(c=>c.sede===sid && c.estado==='activa' && (!app.dep || c.dep===app.dep) && libre(c.id,f,ini,dur));
+const activas = sid => CANCHAS.filter(c=>c.sede===sid && c.estado==='activa');
+function appSede(id){ const d = depsDe(activas(id));
+  Object.assign(app,{sede:id, dep:d[0], dur:DEP[d[0]].dur, fecha:TODAY, hora:null, cancha:null}); appGo('turno'); }
+function appDep(k){ Object.assign(app,{dep:k, dur:DEP[k].dur, hora:null, cancha:null}); render(); }
+function appHora(m){ const ya = app.hora===m; app.hora = ya ? null : m; app.cancha = null;
+  if(!ya){ const cs = disp(app.sede,app.fecha,m,app.dur); if(cs.length===1) app.cancha = cs[0].id; }   // si hay una sola cancha, queda elegida
+  render(); }
+function appDia(d){ app.fecha = d; app.hora = null; app.cancha = null; render(); }
+const horasHasta = r => (kDate(r.fecha).getTime() + r.ini*60000 - Date.now()) / 3600000;
+const misVig = () => app.mias.filter(r=>vigente(r) && !pasado(r.fecha, r.ini+r.dur)).length;
+
+const aHead = (t, back) => `<header class="c-head"><div class="wrap">
+  ${back?`<button class="c-ib" onclick="history.back()" aria-label="Volver">${ic('arrow-left',20)}</button>`:'<span class="c-ib ghost"></span>'}
+  <div class="tt"><b>${t}</b><small>${app.sede && app.step!=='mis' ? CLUB.n+' · '+sede(app.sede).n : CLUB.n}</small></div>
+  ${app.step==='mis' ? '<span class="c-ib ghost"></span>' : `<button class="c-ib mis" onclick="appGo('mis')" aria-label="Mis reservas">${ic('ticket',18)}<span class="lbl">Mis reservas</span>${misVig()?`<em>${misVig()}</em>`:''}</button>`}
+</div></header>`;
+const resumen = (o, titulo) => { const c = cancha(o.cancha), s = sede(c.sede); return `<div class="c-sum">${titulo?`<h3>${titulo}</h3>`:''}
+  <div><span>Sede</span><b>${s.n}</b></div><div><span>Cancha</span><b>${c.n} · ${depTipo(c)}, ${c.techo.toLowerCase()}</b></div>
+  <div><span>Día</span><b>${dLabel(o.fecha)}</b></div>
+  <div><span>Horario</span><b>${hm(o.ini)} a ${hm(o.ini+o.dur)} (${o.dur} min)</b></div>
+  ${descAfil(c,o.afil) ? `<div><span>Precio</span><b>${money(precio(c,o.ini,o.dur))}</b></div>
+  <div class="desc"><span>Descuento afiliado (${descAfil(c,o.afil)}%)</span><b>−${money(precio(c,o.ini,o.dur)-precioAfil(c,o.ini,o.dur,o.afil))}</b></div>` : ''}
+  <div class="big"><span>Total</span><b>${money(precioAfil(c,o.ini,o.dur,o.afil))}</b></div></div>`; };
+// Afiliado elegido por el jugador: true o su número; null si no es afiliado
+const afilSel = () => { const D = (app.step==='datos' ? app.draft||app.datos : app.datos) || {}; return D.afil==='si' ? (D.afN||true) : null; };
+const sel = () => ({cancha:app.cancha, fecha:app.fecha, ini:app.hora, dur:app.dur, afil:afilSel()});
+const firma = '<div class="firma">Reservas online con <b>Clupoint</b></div>';
+
+function render(){
+  const el = $('#app');
+  const E = k => app.err[k] ? `<div class="c-err">${app.err[k]}</div>` : '';
+  let h = '';
+  if(!CLUB.activo){
+    h = `<div class="c-closed">${ic('info',38)}<b>Este sitio no está disponible</b><span>Las reservas online de ${CLUB.n} están pausadas. Comunicate con el club.</span></div>`;
+  }
+  else if(app.step==='inicio'){
+    const depsClub = depsDe(CANCHAS);
+    h = `<div class="c-inicio" style="--foto:${CLUB.foto?`url('${CLUB.foto}')`:'none'}"><div class="wrap">
+      <div class="c-hero"><span class="c-logo">${ic(depsClub.length===1?DEP[depsClub[0]].i:'clupoint',34)}</span><h1>${CLUB.n}</h1><p>Reservá tu cancha: elegí sede, día y horario. Confirmás en menos de un minuto.</p></div>
+      <div class="c-list">${SEDES.length?'':`<div class="c-empty">${ic('calendar-days',34)}<span>El club todavía no publicó sus sedes.</span></div>`}${SEDES.map(s=>{ const cs = activas(s.id);
+        return `<button class="c-sede" ${cs.length?'':'disabled style="opacity:.5"'} onclick="appSede(${s.id})">
+          <div class="c-row"><b>${s.n}</b>${ic('chevron-right',18)}</div>
+          <small>${ic('map-pin',13)} ${s.dir}</small>
+          ${cs.length?`<div class="deps">${depsDe(cs).map(depChip).join('')}</div>`:''}
+          <div class="c-meta"><span>${cs.length} canchas</span>${cs.length?`<span>desde ${money(Math.min(...cs.map(c=>c.valle)))}/h</span>`:''}<span>${s.abre} a ${hm(closeMin(s))}</span></div>
+          <div class="c-tags">${s.servicios.map(x=>`<span>${x}</span>`).join('')}</div></button>`; }).join('')}</div>
+      <div class="c-foot"><button class="c-btn ghost" onclick="appGo('mis')">${ic('ticket',18)} Mis reservas ${misVig()?`<span>${misVig()}</span>`:''}</button>${firma}</div>
+    </div></div>`;
+  }
+  else if(app.step==='turno'){
+    const s = sede(app.sede), a = toMin(s.abre), e = closeMin(s);
+    // solo los horarios con al menos una cancha libre, agrupados por momento del día
+    const slots = []; for(let m=a; m+app.dur<=e; m+=30){ const cs = disp(s.id,app.fecha,m,app.dur); if(cs.length) slots.push({m, cs}); }
+    const MOMENTOS = [['Mañana',0,720],['Tarde',720,1140],['Noche',1140,2880]];
+    const fila = x => { const on = x.m===app.hora, desde = Math.min(...x.cs.map(c=>precio(c,x.m,app.dur)));
+      return `<div class="c-hora ${on?'on':''}">
+        <button class="c-hrow" onclick="appHora(${x.m})" aria-expanded="${on}">
+          <b>${hm(x.m)}</b>
+          <span class="c-tx"><small>hasta las ${hm(x.m+app.dur)}</small><small>${x.cs.length} ${x.cs.length===1?'cancha libre':'canchas libres'}</small></span>
+          <span class="c-pr">${x.cs.length>1?'<small>desde</small>':''}${money(desde)}</span>${ic(on?'chevron-up':'chevron-down',18)}</button>
+        ${on?`<div class="c-hcourts">${x.cs.map(c=>`<button class="c-court ${c.id===app.cancha?'on':''}" onclick="app.cancha=${c.id};render()">
+          <span class="c-ic">${ic(DEP[c.dep].i,20)}</span>
+          <span class="c-tx"><b>${c.n}</b><small>${c.tipo} · ${c.techo} · ${c.sup}</small></span>
+          <span class="c-pr">${money(precio(c,x.m,app.dur))}</span><span class="rad"></span></button>`).join('')}</div>`:''}
+      </div>`; };
+    const depsSede = depsDe(activas(s.id)), total = app.cancha ? money(precio(cancha(app.cancha),app.hora,app.dur)) : '';
+    h = aHead('Elegí tu turno','inicio') + `<div class="lay wrap"><div class="c-sec">
+      ${depsSede.length>1?`<div class="c-lbl">Deporte</div>
+      <div class="c-deps">${depsSede.map(k=>`<button class="${k===app.dep?'on':''}" onclick="appDep('${k}')">${ic(DEP[k].i,17)}${DEP[k].n}</button>`).join('')}</div>`:''}
+      <div class="c-lbl"><span>Día <em id="dMes"></em></span>
+        <span class="c-arr"><button id="dPrev" onclick="diasMover(-1)" aria-label="Fechas anteriores">${ic('chevron-left',18)}</button><button id="dNext" onclick="diasMover(1)" aria-label="Más fechas">${ic('chevron-right',18)}</button></span></div>
+      <div class="c-days" id="cDays" onscroll="diasEstado()">${[...Array(DIAS_RESERVA)].map((_,i)=>{ const d = addD(TODAY,i), dt = kDate(d);
+        return `<button class="${d===app.fecha?'on':''}" data-d="${d}" onclick="appDia('${d}')"><small>${i===0?'Hoy':dt.toLocaleDateString('es-AR',{weekday:'short'}).replace('.','')}</small><b>${dt.getDate()}</b>${dt.getDate()===1||i===0?`<i>${dt.toLocaleDateString('es-AR',{month:'short'}).replace('.','')}</i>`:''}</button>`; }).join('')}</div>
+      <div class="c-lbl">Duración</div>
+      <div class="c-seg">${[60,90,120].map(d=>`<button class="${d===app.dur?'on':''}" onclick="app.dur=${d};app.hora=null;app.cancha=null;render()">${d} min</button>`).join('')}</div>
+      <div class="c-lbl">Horario <em>${slots.length} disponibles</em></div>
+      ${slots.length ? `<div class="c-horas">${MOMENTOS.map(([t,d,hh])=>{ const l = slots.filter(x=>x.m>=d && x.m<hh);
+          return l.length ? `<div class="c-mom">${t}</div>${l.map(fila).join('')}` : ''; }).join('')}</div>`
+        : `<div class="c-empty" style="padding:24px 0">${ic('calendar-days',30)}No quedan turnos este día. Probá otro día o duración.</div>`}
+    </div>
+    <aside class="side">${app.cancha ? resumen(sel(),'Tu reserva') : `<div class="c-sum"><h3>Tu reserva</h3><div class="vacio">${dLabel(app.fecha)} · ${app.dur} min.<br>Elegí un horario y una cancha para continuar.</div></div>`}
+      <button class="c-btn" ${app.cancha?'':'disabled'} onclick="appGo('datos')">Continuar ${total?`<span>${total}</span>`:''}</button></aside>
+    <div class="c-foot"><button class="c-btn" ${app.cancha?'':'disabled'} onclick="appGo('datos')">Continuar ${total?`<span>${total}</span>`:''}</button></div></div>`;
+  }
+  else if(app.step==='datos'){
+    const s = sede(app.sede), D = app.draft || app.datos || {};
+    const boton = `<button class="c-btn" onclick="appDatos()">Ir al pago ${ic('chevron-right',18)}</button>`;
+    h = aHead('Tus datos','turno') + `<div class="lay wrap"><div class="c-form">
+      <div class="m-only">${resumen(sel())}</div>
+      <label>Nombre y apellido<div class="c-in ${app.err.nom?'bad':''}">${ic('user',18)}<input id="aNom" value="${D.nom||''}" placeholder="A nombre de quién va la reserva" autocomplete="name"></div>${E('nom')}</label>
+      <label>Celular<div class="c-in ${app.err.tel?'bad':''}">${ic('phone',18)}<input id="aTel" value="${D.tel||''}" inputmode="tel" placeholder="358 555 5555" autocomplete="tel"></div>${E('tel')}</label>
+      <label>Email <em>(opcional, para el comprobante)</em><div class="c-in ${app.err.mail?'bad':''}">${ic('mail',18)}<input id="aMail" value="${D.mail||''}" inputmode="email" placeholder="tu@email.com" autocomplete="email"></div>${E('mail')}</label>
+      ${s.afil?`<div class="c-lbl">¿Sos afiliado al club?${s.afilDesc?` <em>Afiliados: ${s.afilDesc}% de descuento</em>`:''}</div>
+      <div class="c-seg dos ${app.err.afil?'bad':''}" role="radiogroup" aria-label="¿Sos afiliado?">${[['si','Sí'],['no','No']].map(([k,t])=>`<button role="radio" aria-checked="${D.afil===k}" class="${D.afil===k?'on':''}" onclick="appAfil('${k}')">${t}</button>`).join('')}</div>${E('afil')}
+      ${D.afil==='si'&&s.afilNum?`<label>N° de afiliado<div class="c-in ${app.err.afN?'bad':''}">${ic('ticket',18)}<input id="aAfN" value="${D.afN||''}" inputmode="numeric" placeholder="Como figura en tu carnet"></div>${E('afN')}</label>`:''}`:''}
+      <label class="c-ok"><input type="checkbox" id="aOk" ${D.ok?'checked':''}><span>Acepto la política de la sede: cancelación sin cargo hasta <b>${s.cancel} h antes</b> del turno.</span></label>${E('ok')}
+    </div>
+    <aside class="side">${resumen(sel(),'Tu reserva')}${boton}</aside>
+    <div class="c-foot">${boton}</div></div>`;
+  }
+  else if(app.step==='pago'){
+    const s = sede(app.sede), total = precioAfil(cancha(app.cancha),app.hora,app.dur,afilSel()), sena = Math.round(total*s.sena/100/100)*100;
+    const ops = [];
+    if(s.sena<100) ops.push({k:'senada', t:`Seña del ${s.sena}%`, d:`Pagás ${money(sena)} ahora y ${money(total-sena)} en el club`, m:sena, i:'wallet'});
+    ops.push({k:'pagada', t:'Pago total', d:'Mercado Pago, tarjeta o transferencia', m:total, i:'credit-card'});
+    if(s.pagoClub) ops.push({k:'pendiente', t:'Pagar en el club', d:'Queda reservado; llegá 15 min antes para abonar', m:0, i:'store'});
+    if(!ops.some(o=>o.k===app.pago)) app.pago = ops[0].k;
+    const op = ops.find(o=>o.k===app.pago);
+    const boton = `<button class="c-btn" ${app.busy?'disabled':''} onclick="appPagar()">${app.busy?'Procesando pago…':op.m?`${ic('credit-card',18)} Pagar ${money(op.m)}`:`${ic('check',18)} Confirmar reserva`}</button>`;
+    h = aHead('Pago','datos') + `<div class="lay wrap"><div class="c-form">
+      <div class="m-only">${resumen(sel())}</div>
+      <div class="c-lbl">¿Cómo querés pagar?</div>
+      ${ops.map(o=>`<button class="c-pay ${o.k===app.pago?'on':''}" onclick="app.pago='${o.k}';render()"><span class="c-ic">${ic(o.i,20)}</span>
+        <span class="c-tx"><b>${o.t}</b><small>${o.d}</small></span><span class="rad"></span></button>`).join('')}
+      <div class="c-safe">${ic('shield-check',16)} Pago seguro. No guardamos los datos de tu tarjeta.</div>
+    </div>
+    <aside class="side">${resumen(sel(),'Tu reserva')}${boton}</aside>
+    <div class="c-foot">${boton}</div></div>`;
+  }
+  else if(app.step==='ok'){
+    const r = RES.find(x=>x.id===app.ult);
+    h = aHead('Reserva confirmada') + `<div class="solo"><div class="c-done">${ic('circle-check-big',34)}<div><b>¡Listo, ${r.cliente.split(' ')[0]}! Tenés cancha.</b>
+        <small>${r.estado==='pendiente'?'Abonás en el club al llegar.':`Pagaste ${money(pagado(r))}. Te mandamos el comprobante por WhatsApp.`}</small></div></div>
+      <div class="c-form"><div class="c-code"><small>Código de reserva</small><b>${r.code}</b></div>
+        ${resumen({cancha:r.cancha,fecha:r.fecha,ini:r.ini,dur:r.dur,afil:r.afil})}
+        ${r.estado!=='pagada'?`<div class="c-safe">${ic('info',16)} Saldo a pagar en el club: <b style="color:var(--text)">${money(r.monto-pagado(r))}</b></div>`:''}
+      </div>
+      <div class="c-foot">
+        <button class="c-btn ghost" onclick="toast('Se agregaría el turno a tu calendario')">${ic('calendar-plus',18)} Agregar al calendario</button>
+        <button class="c-btn ghost" onclick="toast('Se abriría WhatsApp para avisarle a tus compañeros')">${ic('share-2',18)} Avisar a mis compañeros</button>
+        <button class="c-btn" onclick="appGo('inicio')">Volver al inicio</button></div></div>`;
+  }
+  else if(app.step==='mis'){
+    const l = app.mias;
+    h = aHead('Mis reservas','inicio') + `<div class="solo"><div class="c-list ${l.length?'mis-l':''}">${l.length ? l.map(r=>{ const c = cancha(r.cancha), s = sede(r.sede), puede = vigente(r) && horasHasta(r) > s.cancel;
+      return `<div class="c-res ${r.estado}">
+        <div class="c-row"><b>${dShort(r.fecha)} · ${hm(r.ini)}</b><span class="pill ${r.estado}">${ESTADO[r.estado]}</span></div>
+        <small>${s.n} · ${c.n} · ${r.dur} min</small>
+        <div class="c-row"><small>${r.code}</small><b>${money(r.monto)}</b></div>
+        ${vigente(r) ? (puede ? `<button class="c-cancel" onclick="appCancelar(${r.id})">${ic('x',15)} Cancelar sin cargo</button>`
+          : `<div class="c-note">${ic('info',14)} Faltan menos de ${s.cancel} h: ya no se puede cancelar online</div>`) : ''}
+      </div>`; }).join('') : `<div class="c-empty">${ic('ticket',38)}<span>Todavía no tenés reservas desde este dispositivo.</span></div>`}</div>
+      <div class="c-foot"><button class="c-btn" onclick="appGo('inicio')">${ic('plus',18)} Nueva reserva</button></div></div>`;
+  }
+  const prev = $('#cDays')?.scrollLeft;   // al re-renderizar, la tira de días queda donde estaba
+  el.innerHTML = h;
+  const tira = $('#cDays');
+  if(tira){
+    if(prev!=null) tira.scrollLeft = prev;
+    else { const on = tira.querySelector('.on'); if(on) tira.scrollLeft = on.offsetLeft - (tira.clientWidth - on.offsetWidth)/2; }
+    diasEstado();
+  }
+}
+/* Tira de días: se desliza con el dedo, la ruedita del mouse o las flechas */
+function diasMover(n){ const t = $('#cDays'); t.scrollBy({left: n*(t.clientWidth-60), behavior:'smooth'}); }
+function diasEstado(){
+  const t = $('#cDays'); if(!t) return;
+  $('#dPrev').disabled = t.scrollLeft < 4;
+  $('#dNext').disabled = t.scrollLeft + t.clientWidth > t.scrollWidth - 4;
+  // mes del primer día visible, para ubicarse al pasar de un mes a otro
+  const x = t.getBoundingClientRect().left + 20;
+  const b = [...t.children].find(e => e.getBoundingClientRect().right > x) || t.children[0];
+  $('#dMes').textContent = '· ' + kDate(b.dataset.d).toLocaleDateString('es-AR',{month:'long'});
+}
+document.addEventListener('wheel', e => {   // ruedita vertical → desplazamiento lateral sobre los días
+  const t = e.target.closest?.('#cDays'); if(!t || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+  e.preventDefault(); t.scrollLeft += e.deltaY;
+}, {passive:false});
+
+// Lee el formulario "Tus datos" (para no perder lo tipeado al re-renderizar)
+function leerDatos(){
+  const v = id => $('#'+id)?.value.trim() || '', prev = app.draft || app.datos || {};
+  return {nom:v('aNom'), tel:v('aTel'), mail:v('aMail'), ok:!!$('#aOk')?.checked, afil:prev.afil, afN:$('#aAfN') ? v('aAfN') : prev.afN};
+}
+function appAfil(k){ app.draft = {...leerDatos(), afil:k}; delete app.err.afil; render(); $('#aAfN')?.focus(); }
+function appDatos(){
+  const d = leerDatos(), s = sede(app.sede);
+  app.err = {};
+  if(d.nom.length<3) app.err.nom = 'Ingresá tu nombre y apellido';
+  if(!PHONE_RE.test(d.tel)) app.err.tel = 'Ingresá un celular válido (mín. 8 dígitos)';
+  if(d.mail && !/^\S+@\S+\.\S+$/.test(d.mail)) app.err.mail = 'El email no parece válido';
+  if(s.afil && !d.afil) app.err.afil = 'Contanos si sos afiliado';
+  if(s.afil && d.afil==='si' && s.afilNum && !d.afN) app.err.afN = 'Ingresá tu número de afiliado';
+  if(!d.ok) app.err.ok = 'Necesitamos que aceptes la política de cancelación';
+  if(Object.keys(app.err).length){ app.draft = d; return render(); }
+  app.datos = d; app.draft = null; appGo('pago');
+}
+function appPagar(){
+  app.busy = true; render();
+  setTimeout(()=>{
+    app.busy = false;
+    if(!libre(app.cancha,app.fecha,app.hora,app.dur) || pasado(app.fecha,app.hora)){
+      app.hora = null; app.cancha = null; toast('Ese turno se acaba de ocupar. Elegí otro horario.', true); return appGo('turno');
+    }
+    const r = crear({cid:app.cancha, f:app.fecha, ini:app.hora, dur:app.dur, cliente:app.datos.nom, tel:app.datos.tel, estado:app.pago, afil:afilSel()});
+    app.ult = r.id; app.mias.unshift(r); guardarMias();
+    app.hora = null; app.cancha = null;
+    appGo('ok', true);
+  }, 900);
+}
+function appCancelar(id){
+  const r = RES.find(x=>x.id===id), pg = pagado(r); r.estado = 'cancelada'; guardarMias(); render();
+  toast(`Reserva ${r.code} cancelada${pg?` · te devolvemos ${money(pg)}`:''}`);
+}
+let tt;
+function toast(msg, err){
+  const el = $('#toast'); el.textContent = msg; el.style.background = err ? 'var(--red)' : 'var(--green)';
+  el.classList.add('show'); clearTimeout(tt); tt = setTimeout(()=>el.classList.remove('show'), 3200);
+}
+appGo('inicio', true);
+setInterval(()=>{ if(app.step==='turno') render(); }, 60000);   // los horarios que ya pasaron desaparecen solos
+</script>
+</body>
+</html>
